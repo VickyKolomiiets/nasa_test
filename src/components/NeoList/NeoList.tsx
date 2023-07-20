@@ -19,6 +19,93 @@ import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const NEOList = () => {
+  const [neoData, setNeoData] = useState<any>([]);
+  const [aggregatedData, setAggregatedData] = useState<any>([]);
+  const [startDay, setStartDay] = useState(1);
+
+  const fetchData = async (startDate, endDate) => {
+    const data = await getNEOs(startDate, endDate);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    let endDay = today.getDate();
+
+    const startDateString = `${year}-${month
+      .toString()
+      .padStart(2, "0")}-${startDay.toString().padStart(2, "0")}`;
+    const endDateString = `${year}-${month
+      .toString()
+      .padStart(2, "0")}-${startDay.toString().padStart(2, "0")}`;
+
+    // const data = await fetchData(startDateString, endDateString);
+
+    // for (let date in data.near_earth_objects) {
+    //   let maxDiameter = 0;
+    //   let hazardousNEOs = 0;
+    //   let closestNEO = Infinity;
+    //   let fastestNEO = 0;
+
+    //   for (let neo of data.near_earth_objects[date]) {
+    //     setNeoData((allData) => [...allData, neo]);
+
+    //     if (neo.estimated_diameter_max > maxDiameter) {
+    //       maxDiameter = neo.estimated_diameter_max;
+    //     }
+
+    //     if (neo.is_potentially_hazardous_asteroid) {
+    //       hazardousNEOs++;
+    //     }
+
+    //     if (neo.close_approach_data[0].miss_distance.kilometers < closestNEO) {
+    //       closestNEO = neo.close_approach_data[0].miss_distance.kilometers;
+    //     }
+
+    //     if (
+    //       neo.close_approach_data[0].relative_velocity.kilometers_per_hour >
+    //       fastestNEO
+    //     ) {
+    //       fastestNEO =
+    //         neo.close_approach_data[0].relative_velocity.kilometers_per_hour;
+    //     }
+    //   }
+
+    //   setAggregatedData((prev) => [
+    //     ...prev,
+    //     {
+    //       date,
+    //       maxDiameter,
+    //       hazardousNEOs,
+    //       closestNEO,
+    //       fastestNEO,
+    //     },
+    //   ]);
+    // }
+
+    console.log(startDay);
+    setStartDay((prevDay) => prevDay + 1);
+
+    if (startDay === endDay) {
+      setStartDay(1);
+    }
+  };
+
+  useEffect(() => {}, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchAllData();
+    }, 5000); // Every 5 seconds
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [startDay]);
+
+  // TODO remove, this demo shouldn't need to reset the theme.
   const defaultTheme = createTheme();
 
   return (
@@ -51,15 +138,43 @@ const NEOList = () => {
               >
                 Album layout
               </Typography>
+
               <Typography
                 variant="h5"
                 align="center"
                 color="text.secondary"
                 paragraph
               >
-                Something short and leading about the collection below—its
-                contents, the creator, etc. Make it short and sweet, but not too
-                short so folks don&apos;t simply skip over it entirely.
+                {" "}
+                Max Diameter: {aggregatedData.maxDiameter}
+              </Typography>
+
+              <Typography
+                variant="h5"
+                align="center"
+                color="text.secondary"
+                paragraph
+              >
+                {" "}
+                Hazardous NEOs: {aggregatedData.hazardousNEOs}
+              </Typography>
+              <Typography
+                variant="h5"
+                align="center"
+                color="text.secondary"
+                paragraph
+              >
+                {" "}
+                Closest NEO: {aggregatedData.closestNEO}
+              </Typography>
+              <Typography
+                variant="h5"
+                align="center"
+                color="text.secondary"
+                paragraph
+              >
+                {" "}
+                Fastest NEO (Km/h): {aggregatedData.fastestNEO}
               </Typography>
               <Stack
                 sx={{ pt: 4 }}
@@ -74,7 +189,13 @@ const NEOList = () => {
           </Box>
           <Container sx={{ py: 8 }} maxWidth="md">
             {/* End hero unit */}
-            <Grid container spacing={4}></Grid>
+            <Grid container spacing={4}>
+              {neoData.slice(startDay, startDay + 6).map((item, index) => (
+                <Grid item key={item.id} xs={12} sm={6} md={4}>
+                  <NeoListItem item={item} aggregatedData={aggregatedData} />
+                </Grid>
+              ))}
+            </Grid>
           </Container>
         </main>
         {/* Footer */}

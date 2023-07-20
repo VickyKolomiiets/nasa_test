@@ -8,9 +8,12 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const NeoListItem = ({ item }: any) => {
+const NeoListItem = ({ item, aggregatedData }: any) => {
   return (
     <Card
+      style={{
+        backgroundColor: item.is_potentially_hazardous_asteroid ? "red" : "",
+      }}
       sx={{
         height: "100%",
         display: "flex",
@@ -29,20 +32,25 @@ const NeoListItem = ({ item }: any) => {
         <Typography gutterBottom variant="h5" component="h2">
           Heading
         </Typography>
-        <Typography>Max Diameter: {item.maxDiameter}</Typography>
+        <Typography>Name: {item.name}</Typography>
+        <Typography>ID: {item.id}</Typography>
 
-        <Typography>Hazardous NEOs: {item.hazardousNEOs}</Typography>
-        <Typography>Closest NEO: {item.closestNEO}</Typography>
-        <Typography>Fastest NEO: {item.fastestNEO}</Typography>
+        <Typography>
+          Potentially hazardous:{" "}
+          {item.is_potentially_hazardous_asteroid ? "Yes" : "No"}
+        </Typography>
+        <Typography>
+          Is sentry: {item.is_sentry_object ? "Yes" : "No"}
+        </Typography>
+        <Typography>
+          Km/h:{" "}
+          {item.close_approach_data[0].relative_velocity.kilometers_per_hour}
+        </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small">View</Button>
-        <Button size="small">Edit</Button>
-      </CardActions>
     </Card>
 
     // <Card variant="outlined">
-    //   <div style={{ backgroundColor: item.isHazardous ? "red" : "white" }}>
+    //   <div >
     //     <p>Max Diameter: {item.maxDiameter}</p>
     //     <p>Hazardous NEOs: {item.hazardousNEOs}</p>
     //     <p>Closest NEO: {item.closestNEO}</p>
