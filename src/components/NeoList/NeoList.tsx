@@ -19,10 +19,10 @@ import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const NEOList = () => {
-  const [neoData, setNeoData] = useState<any>([]);
   const [aggregatedData, setAggregatedData] = useState<any>([]);
   const [startDay, setStartDay] = useState(1);
 
+  console.log(aggregatedData);
   const fetchData = async (startDate, endDate) => {
     const data = await getNEOs(startDate, endDate);
     return data;
@@ -37,63 +37,56 @@ const NEOList = () => {
     const startDateString = `${year}-${month
       .toString()
       .padStart(2, "0")}-${startDay.toString().padStart(2, "0")}`;
-    const endDateString = `${year}-${month
-      .toString()
-      .padStart(2, "0")}-${startDay.toString().padStart(2, "0")}`;
+    const endDateString = startDateString;
 
-    // const data = await fetchData(startDateString, endDateString);
+    const data = await fetchData(startDateString, endDateString);
 
-    // for (let date in data.near_earth_objects) {
-    //   let maxDiameter = 0;
-    //   let hazardousNEOs = 0;
-    //   let closestNEO = Infinity;
-    //   let fastestNEO = 0;
+    for (let date in data.near_earth_objects) {
+      let maxDiameter = 0;
+      let hazardousNEOs = 0;
+      let closestNEO = Infinity;
+      let fastestNEO = 0;
 
-    //   for (let neo of data.near_earth_objects[date]) {
-    //     setNeoData((allData) => [...allData, neo]);
+      for (let neo of data.near_earth_objects[date]) {
+        if (neo.estimated_diameter_max > maxDiameter) {
+          maxDiameter = neo.estimated_diameter_max;
+        }
 
-    //     if (neo.estimated_diameter_max > maxDiameter) {
-    //       maxDiameter = neo.estimated_diameter_max;
-    //     }
+        if (neo.is_potentially_hazardous_asteroid) {
+          hazardousNEOs++;
+        }
 
-    //     if (neo.is_potentially_hazardous_asteroid) {
-    //       hazardousNEOs++;
-    //     }
+        if (neo.close_approach_data[0].miss_distance.kilometers < closestNEO) {
+          closestNEO = neo.close_approach_data[0].miss_distance.kilometers;
+        }
 
-    //     if (neo.close_approach_data[0].miss_distance.kilometers < closestNEO) {
-    //       closestNEO = neo.close_approach_data[0].miss_distance.kilometers;
-    //     }
+        if (
+          neo.close_approach_data[0].relative_velocity.kilometers_per_hour >
+          fastestNEO
+        ) {
+          fastestNEO =
+            neo.close_approach_data[0].relative_velocity.kilometers_per_hour;
+        }
+      }
 
-    //     if (
-    //       neo.close_approach_data[0].relative_velocity.kilometers_per_hour >
-    //       fastestNEO
-    //     ) {
-    //       fastestNEO =
-    //         neo.close_approach_data[0].relative_velocity.kilometers_per_hour;
-    //     }
-    //   }
+      setAggregatedData((prev) => [
+        ...prev,
+        {
+          date,
+          maxDiameter,
+          hazardousNEOs,
+          closestNEO,
+          fastestNEO,
+        },
+      ]);
+    }
 
-    //   setAggregatedData((prev) => [
-    //     ...prev,
-    //     {
-    //       date,
-    //       maxDiameter,
-    //       hazardousNEOs,
-    //       closestNEO,
-    //       fastestNEO,
-    //     },
-    //   ]);
-    // }
-
-    console.log(startDay);
     setStartDay((prevDay) => prevDay + 1);
 
-    if (startDay === endDay) {
+    if (startDay > endDay) {
       setStartDay(1);
     }
   };
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -115,7 +108,7 @@ const NEOList = () => {
         <AppBar position="relative">
           <Toolbar>
             <Typography variant="h6" color="inherit" noWrap>
-              Album layout
+              NASA
             </Typography>
           </Toolbar>
         </AppBar>
@@ -136,7 +129,7 @@ const NEOList = () => {
                 color="text.primary"
                 gutterBottom
               >
-                Album layout
+                {startDay}
               </Typography>
 
               <Typography
@@ -176,43 +169,19 @@ const NEOList = () => {
                 {" "}
                 Fastest NEO (Km/h): {aggregatedData.fastestNEO}
               </Typography>
-              <Stack
-                sx={{ pt: 4 }}
-                direction="row"
-                spacing={2}
-                justifyContent="center"
-              >
-                <Button variant="contained">Main call to action</Button>
-                <Button variant="outlined">Secondary action</Button>
-              </Stack>
             </Container>
           </Box>
           <Container sx={{ py: 8 }} maxWidth="md">
             {/* End hero unit */}
-            <Grid container spacing={4}>
-              {neoData.slice(startDay, startDay + 6).map((item, index) => (
-                <Grid item key={item.id} xs={12} sm={6} md={4}>
-                  <NeoListItem item={item} aggregatedData={aggregatedData} />
-                </Grid>
+            <Grid spacing={4} style={{ gap: "5px" }}>
+              {/* <Grid item xs={12} sm={6} md={4}> */}
+              {aggregatedData.slice(-6).map((item, index) => (
+                <NeoListItem item={item} />
               ))}
+              {/* </Grid> */}
             </Grid>
           </Container>
         </main>
-        {/* Footer */}
-        <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
-          <Typography variant="h6" align="center" gutterBottom>
-            Footer
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            align="center"
-            color="text.secondary"
-            component="p"
-          >
-            Something here to give the footer a purpose!
-          </Typography>
-        </Box>
-        {/* End footer */}
       </ThemeProvider>
     </div>
   );

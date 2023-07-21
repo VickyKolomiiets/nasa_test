@@ -8,16 +8,11 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const NeoListItem = ({ item, aggregatedData }: any) => {
+const NeoListItem = ({ item }: any) => {
   return (
     <Card
       style={{
-        backgroundColor: item.is_potentially_hazardous_asteroid ? "red" : "",
-      }}
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
+        backgroundColor: item.is ? "red" : "",
       }}
     >
       <CardMedia
@@ -26,37 +21,18 @@ const NeoListItem = ({ item, aggregatedData }: any) => {
           // 16:9
           pt: "56.25%",
         }}
-        image="https://source.unsplash.com/random?wallpapers"
+        image="https://www.esa.int/var/esa/storage/images/esa_multimedia/videos/2017/04/visualisation_of_asteroid_itokawa/16919406-1-eng-GB/Visualisation_of_asteroid_Itokawa_pillars.jpg"
       />
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h5" component="h2">
-          Heading
+          Day: {item.date}
         </Typography>
-        <Typography>Name: {item.name}</Typography>
-        <Typography>ID: {item.id}</Typography>
-
-        <Typography>
-          Potentially hazardous:{" "}
-          {item.is_potentially_hazardous_asteroid ? "Yes" : "No"}
-        </Typography>
-        <Typography>
-          Is sentry: {item.is_sentry_object ? "Yes" : "No"}
-        </Typography>
-        <Typography>
-          Km/h:{" "}
-          {item.close_approach_data[0].relative_velocity.kilometers_per_hour}
-        </Typography>
+        <Typography>Max item: {item.maxDiameter}</Typography>
+        <Typography>Hazardous NEOs: {item.isHazardous}</Typography>
+        <Typography>Closest NEO: {item.closestNEO}</Typography>
+        <Typography>Fastest NEO: {item.fastestNEO}</Typography>
       </CardContent>
     </Card>
-
-    // <Card variant="outlined">
-    //   <div >
-    //     <p>Max Diameter: {item.maxDiameter}</p>
-    //     <p>Hazardous NEOs: {item.hazardousNEOs}</p>
-    //     <p>Closest NEO: {item.closestNEO}</p>
-    //     <p>Fastest NEO: {item.fastestNEO}</p>
-    //   </div>
-    // </Card>
   );
 };
 
