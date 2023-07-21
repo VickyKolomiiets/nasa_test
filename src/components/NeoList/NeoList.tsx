@@ -3,27 +3,21 @@ import NeoListItem from "./NeoListItem";
 import { getNEOs } from "../../services/nasaAPI";
 
 import AppBar from "@mui/material/AppBar";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
+
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const NEOList = () => {
   const [aggregatedData, setAggregatedData] = useState<any>([]);
-  const [startDay, setStartDay] = useState(1);
+  const [currentDay, setCurrentDay] = useState(1);
 
-  console.log(aggregatedData);
-  const fetchData = async (startDate, endDate) => {
+  const fetchData = async (startDate) => {
+    let endDate = startDate;
     const data = await getNEOs(startDate, endDate);
     return data;
   };
@@ -36,10 +30,9 @@ const NEOList = () => {
 
     const startDateString = `${year}-${month
       .toString()
-      .padStart(2, "0")}-${startDay.toString().padStart(2, "0")}`;
-    const endDateString = startDateString;
+      .padStart(2, "0")}-${currentDay.toString().padStart(2, "0")}`;
 
-    const data = await fetchData(startDateString, endDateString);
+    const data = await fetchData(startDateString);
 
     for (let date in data.near_earth_objects) {
       let maxDiameter = 0;
@@ -48,8 +41,11 @@ const NEOList = () => {
       let fastestNEO = 0;
 
       for (let neo of data.near_earth_objects[date]) {
-        if (neo.estimated_diameter_max > maxDiameter) {
-          maxDiameter = neo.estimated_diameter_max;
+        if (
+          neo.estimated_diameter.kilometers.estimated_diameter_max > maxDiameter
+        ) {
+          maxDiameter =
+            neo.estimated_diameter.kilometers.estimated_diameter_max;
         }
 
         if (neo.is_potentially_hazardous_asteroid) {
@@ -81,10 +77,10 @@ const NEOList = () => {
       ]);
     }
 
-    setStartDay((prevDay) => prevDay + 1);
+    setCurrentDay((prevDay) => prevDay + 1);
 
-    if (startDay > endDay) {
-      setStartDay(1);
+    if (currentDay > endDay) {
+      setCurrentDay(1);
     }
   };
 
@@ -96,7 +92,7 @@ const NEOList = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [startDay]);
+  }, [currentDay]);
 
   // TODO remove, this demo shouldn't need to reset the theme.
   const defaultTheme = createTheme();
@@ -104,7 +100,6 @@ const NEOList = () => {
   return (
     <div>
       <ThemeProvider theme={defaultTheme}>
-        <CssBaseline />
         <AppBar position="relative">
           <Toolbar>
             <Typography variant="h6" color="inherit" noWrap>
@@ -113,7 +108,6 @@ const NEOList = () => {
           </Toolbar>
         </AppBar>
         <main>
-          {/* Hero unit */}
           <Box
             sx={{
               bgcolor: "background.paper",
@@ -122,58 +116,16 @@ const NEOList = () => {
             }}
           >
             <Container maxWidth="sm">
-              <Typography
-                component="h1"
-                variant="h2"
-                align="center"
-                color="text.primary"
-                gutterBottom
-              >
-                {startDay}
-              </Typography>
-
-              <Typography
-                variant="h5"
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
-                {" "}
-                Max Diameter: {aggregatedData.maxDiameter}
-              </Typography>
-
-              <Typography
-                variant="h5"
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
-                {" "}
-                Hazardous NEOs: {aggregatedData.hazardousNEOs}
-              </Typography>
-              <Typography
-                variant="h5"
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
-                {" "}
-                Closest NEO: {aggregatedData.closestNEO}
-              </Typography>
-              <Typography
-                variant="h5"
-                align="center"
-                color="text.secondary"
-                paragraph
-              >
-                {" "}
-                Fastest NEO (Km/h): {aggregatedData.fastestNEO}
+              <Typography align="center" color="text.primary" gutterBottom>
+                Near-Earth Objects (NEOs) are comets and asteroids that have
+                been nudged by the gravitational attraction of nearby planets
+                into orbits that allow them to enter the Earth’s neighborhood.
               </Typography>
             </Container>
           </Box>
           <Container sx={{ py: 8 }} maxWidth="md">
             {/* End hero unit */}
-            <Grid spacing={4} style={{ gap: "5px" }}>
+            <Grid style={{ gap: "5px" }}>
               {/* <Grid item xs={12} sm={6} md={4}> */}
               {aggregatedData.slice(-6).map((item, index) => (
                 <NeoListItem item={item} />

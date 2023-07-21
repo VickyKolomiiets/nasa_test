@@ -12,7 +12,7 @@ const NeoListItem = ({ item }: any) => {
   return (
     <Card
       style={{
-        backgroundColor: item.is ? "red" : "",
+        backgroundColor: item.hazardousNEOs ? "red" : "",
       }}
     >
       <CardMedia
@@ -27,8 +27,11 @@ const NeoListItem = ({ item }: any) => {
         <Typography gutterBottom variant="h5" component="h2">
           Day: {item.date}
         </Typography>
-        <Typography>Max item: {item.maxDiameter}</Typography>
-        <Typography>Hazardous NEOs: {item.isHazardous}</Typography>
+        <Typography>Max diameter (Km): {item.maxDiameter}</Typography>
+        <Typography>Hazardous NEOs: {item.hazardousNEOs}</Typography>
+        <Typography>
+          Is Hazardous: {item.hazardousNEOs ? "Yes" : "No"}
+        </Typography>
         <Typography>Closest NEO: {item.closestNEO}</Typography>
         <Typography>Fastest NEO: {item.fastestNEO}</Typography>
       </CardContent>
