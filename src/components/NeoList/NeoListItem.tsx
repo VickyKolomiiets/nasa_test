@@ -13,6 +13,7 @@ const NeoListItem = ({ item }: any) => {
     <Card
       style={{
         backgroundColor: item.hazardousNEOs ? "red" : "",
+        marginBottom: "15px",
       }}
     >
       <CardMedia

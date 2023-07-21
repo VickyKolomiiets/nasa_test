@@ -81,13 +81,14 @@ const NEOList = () => {
 
     if (currentDay > endDay) {
       setCurrentDay(1);
+      setAggregatedData((prev) => [...prev.slice(-6)]);
     }
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       fetchAllData();
-    }, 5000); // Every 5 seconds
+    }, 5000);
 
     return () => {
       clearInterval(interval);
@@ -124,13 +125,12 @@ const NEOList = () => {
             </Container>
           </Box>
           <Container sx={{ py: 8 }} maxWidth="md">
-            {/* End hero unit */}
-            <Grid style={{ gap: "5px" }}>
-              {/* <Grid item xs={12} sm={6} md={4}> */}
-              {aggregatedData.slice(-6).map((item, index) => (
-                <NeoListItem item={item} />
+            <Grid>
+              {aggregatedData.length < 1 ? "Loading" : ""}
+
+              {aggregatedData.slice(-6).map((item) => (
+                <NeoListItem item={item} key={item.date} />
               ))}
-              {/* </Grid> */}
             </Grid>
           </Container>
         </main>
